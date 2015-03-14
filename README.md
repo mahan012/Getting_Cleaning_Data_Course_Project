@@ -1,202 +1,246 @@
-# **Getting and Cleaning Data Course Project**
+Getting and Cleaning Data Course Project
 
-# This projected is implemented as run\_analysis.R is implemented as a function that accepts two arguments working\_dir and download\_dir .
+#######################################################################################################################
 
-# A valid working\_dir must be supplied ; if the directory is not valid the program will error out ans exit.
+This projected is implemented as run\_analysis.R is implemented as a function that accepts two arguments working\_dir and download\_dir .
 
-# Download\_dir is where processing data from web gets down loaded. The default directory for this is a sub directory under working\_dir called Data.
+A valid working\_dir must be supplied; if the directory is not valid the program will error out and exit.
 
-# The functional specification for this project is 
+Download\_dir is where processing data from web gets down loaded. The default directory for this is a sub directory under working\_dir called Data.
 
-1. Merges the training and the test sets to create one data set.&nbsp;
-2. Extracts only the measurements on the mean and standard deviation for each measurement.&nbsp;
-3. Uses descriptive activity names to name the activities in the data set&nbsp;
-4. Appropriately labels the data set with descriptive variable names.&nbsp;
-5. From the data set in step 4, creates a second, independent tidy data set with the average of each variable for each activity and each subject.&nbsp;
+######################################################################################################################
 
-# &nbsp; **We will &nbsp;source dplyr library**
+The functional specification for this project is
 
-# &nbsp; library(dplyr); 
+Merges the training and the test sets to create one data set.
 
-# &nbsp; **Validate that working directory passed is a valid directory & set the working directory**
+Extracts only the measurements on the mean and standard deviation for each measurement.
 
-# &nbsp; if (!file.exists (working\_dir)) {
+Uses descriptive activity names to name the activities in the data set
 
-# &nbsp; &nbsp; &nbsp;stop ("Specify valid working dirctory")
+Appropriately labels the data set with descriptive variable names.
 
-# &nbsp; }
+From the data set in step 4, creates a second, independent tidy data set with the average of each variable for each activity and each subject.
 
-# &nbsp; setwd(working\_dir)
+We will source dplyr library
 
-# &nbsp; **#if the directory to down load and manipulate data doesn't exists create that directory**
+&nbsp; library(dplyr);
 
-# &nbsp; if(!file.exists("./data")){dir.create("./data")} 
+# Validate that working directory passed is a valid directory & set the working directory
 
-# &nbsp; **#Down load and Unzip the file to create raw data**
+&nbsp; &nbsp;if (!file.exists (working\_dir)) {
 
-fileUrl<-"https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip"
+&nbsp; &nbsp; &nbsp;stop ("Specify valid working dirctory")
 
-# **&nbsp;This assignment was done on windows and needed method="auto" and mode="wb" . The usual recommendation of curl for method did not work**
+&nbsp; }
 
-# &nbsp; download.file(url=fileUrl,destfile="./data/Dataset.zip",mode="wb",method="auto")
+&nbsp; setwd(working\_dir)
 
-# &nbsp; dateDownloaded <- date()
+&nbsp; #if the directory to down load and manipulate data doesn't exists create that directory
 
-# &nbsp; dateDownloaded
+&nbsp; &nbsp;if(!file.exists("./data")){dir.create("./data")}
 
-# &nbsp; unzip(zipfile="./data/Dataset.zip",exdir="./data", overwrite = TRUE)
+&nbsp; #Down load and Unzip the file to create raw data
 
-# &nbsp; **Source through directories and create a file path to all the files. We have to specify recursive=TRUE to get the subdirectories also. &nbsp;**
+fileUrl <- "https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip"
 
-# &nbsp; filepath\_full<- file.path("./data", "UCI HAR Dataset")
+&nbsp;This assignment was done on windows and needed method="auto" and mode="wb" . The usual recommendation of curl for method did not work
 
-# &nbsp; files<-list.files(filepath\_full, recursive=TRUE)
+&nbsp; download.file(url=fileUrl,destfile="./data/Dataset.zip",mode="wb",method="auto")
 
-# Displaying variuables in files via a debugger will display following files. The directory they are located is 
+&nbsp; dateDownloaded <- date()
 
-# **C:\Coursera\Getting\_Cleaning\_Data\_Course\_Project\data\UCI HAR Dataset**
+&nbsp; dateDownloaded
 
-# files
+&nbsp; unzip(zipfile="./data/Dataset.zip",exdir="./data", overwrite = TRUE)
 
-## &nbsp;[1] "activity\_labels.txt" &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+&nbsp;
 
-## &nbsp;[2] "features\_info.txt" &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+&nbsp;Source through directories and create a file path to all the files. We have to specify recursive=TRUE to get the subdirectories also. &nbsp;
 
-## &nbsp;[3] "features.txt" &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+&nbsp;
 
-## &nbsp;[4] "README.txt" &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+&nbsp; filepath\_full<- file.path("./data", "UCI HAR Dataset")
 
-## &nbsp;[5] "test/Inertial Signals/body\_acc\_x\_test.txt" &nbsp;
+&nbsp; files<-list.files(filepath\_full, recursive=TRUE)
 
-## &nbsp;[6] "test/Inertial Signals/body\_acc\_y\_test.txt" &nbsp;
+&nbsp;
 
-## &nbsp;[7] "test/Inertial Signals/body\_acc\_z\_test.txt" &nbsp;
+Displaying variuables in files via a debugger will display following files. The directory they are located is
 
-## &nbsp;[8] "test/Inertial Signals/body\_gyro\_x\_test.txt" &nbsp;
+C:\Coursera\Getting\_Cleaning\_Data\_Course\_Project\data\UCI HAR Dataset
 
-## &nbsp;[9] "test/Inertial Signals/body\_gyro\_y\_test.txt" &nbsp;
+&nbsp;
 
-## [10] "test/Inertial Signals/body\_gyro\_z\_test.txt" &nbsp;
+files
 
-## [11] "test/Inertial Signals/total\_acc\_x\_test.txt" &nbsp;
+# &nbsp;[1] "activity\_labels.txt" &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
 
-## [12] "test/Inertial Signals/total\_acc\_y\_test.txt" &nbsp;
+# &nbsp;[2] "features\_info.txt" &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
 
-## [13] "test/Inertial Signals/total\_acc\_z\_test.txt" &nbsp;
+# &nbsp;[3] "features.txt" &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
 
-## [14] "test/subject\_test.txt" &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+# &nbsp;[4] "README.txt" &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
 
-## [15] "test/X\_test.txt" &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+# &nbsp;[5] "test/Inertial Signals/body\_acc\_x\_test.txt" &nbsp;
 
-## [16] "test/y\_test.txt" &nbsp; &nbsp;
+# &nbsp;[6] "test/Inertial Signals/body\_acc\_y\_test.txt" &nbsp;
+
+# &nbsp;[7] "test/Inertial Signals/body\_acc\_z\_test.txt" &nbsp;
+
+# &nbsp;[8] "test/Inertial Signals/body\_gyro\_x\_test.txt" &nbsp;
+
+# &nbsp;[9] "test/Inertial Signals/body\_gyro\_y\_test.txt" &nbsp;
+
+# [10] "test/Inertial Signals/body\_gyro\_z\_test.txt" &nbsp;
+
+# [11] "test/Inertial Signals/total\_acc\_x\_test.txt" &nbsp;
+
+# [12] "test/Inertial Signals/total\_acc\_y\_test.txt" &nbsp;
+
+# [13] "test/Inertial Signals/total\_acc\_z\_test.txt" &nbsp;
+
+# [14] "test/subject\_test.txt" &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+
+# [15] "test/X\_test.txt" &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+
+# [16] "test/y\_test.txt" &nbsp; &nbsp;
 
 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
 
-## [17] "train/Inertial Signals/body\_acc\_x\_train.txt"
+# [17] "train/Inertial Signals/body\_acc\_x\_train.txt"
 
-## [18] "train/Inertial Signals/body\_acc\_y\_train.txt"
+# [18] "train/Inertial Signals/body\_acc\_y\_train.txt"
 
-## [19] "train/Inertial Signals/body\_acc\_z\_train.txt"
+# [19] "train/Inertial Signals/body\_acc\_z\_train.txt"
 
-## [20] "train/Inertial Signals/body\_gyro\_x\_train.txt"
+# [20] "train/Inertial Signals/body\_gyro\_x\_train.txt"
 
-## [21] "train/Inertial Signals/body\_gyro\_y\_train.txt"
+# [21] "train/Inertial Signals/body\_gyro\_y\_train.txt"
 
-## [22] "train/Inertial Signals/body\_gyro\_z\_train.txt"
+# [22] "train/Inertial Signals/body\_gyro\_z\_train.txt"
 
-## [23] "train/Inertial Signals/total\_acc\_x\_train.txt"
+# [23] "train/Inertial Signals/total\_acc\_x\_train.txt"
 
-## [24] "train/Inertial Signals/total\_acc\_y\_train.txt"
+# [24] "train/Inertial Signals/total\_acc\_y\_train.txt"
 
-## [25] "train/Inertial Signals/total\_acc\_z\_train.txt"
+# [25] "train/Inertial Signals/total\_acc\_z\_train.txt"
 
-## [26] "train/subject\_train.txt" &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+# [26] "train/subject\_train.txt" &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
 
-## [27] "train/X\_train.txt" &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+# [27] "train/X\_train.txt" &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
 
-## [28] "train/y\_train.txt"
+# [28] "train/y\_train.txt"
 
-# **# Read activity file &nbsp; &nbsp;**
+&nbsp;
 
-# &nbsp; dataActivityTest &nbsp;<- read.table(file.path(filepath\_full, "test" , "Y\_test.txt" ),header = FALSE)
+# Read activity file &nbsp; &nbsp;
 
-# &nbsp; dataActivityTrain <- read.table(file.path(filepath\_full, "train", "Y\_train.txt"),header = FALSE)
+&nbsp; dataActivityTest &nbsp;<- read.table(file.path(filepath\_full, "test" , "Y\_test.txt" ),header = FALSE)
 
-# &nbsp; **# Read the Subject files**
+&nbsp; dataActivityTrain <- read.table(file.path(filepath\_full, "train", "Y\_train.txt"),header = FALSE)
 
-# &nbsp; dataSubjectTrain <- read.table(file.path(filepath\_full, "train", "subject\_train.txt"),header = FALSE)
+&nbsp;
 
-# &nbsp; dataSubjectTest &nbsp;<- read.table(file.path(filepath\_full, "test" , "subject\_test.txt"),header = FALSE)
+&nbsp;# Read the Subject files
 
-# # Read Features &nbsp;files
+&nbsp; dataSubjectTrain <- read.table(file.path(filepath\_full, "train", "subject\_train.txt"),header = FALSE)
 
-# &nbsp; dataFeaturesTest &nbsp;<- read.table(file.path(filepath\_full, "test" , "X\_test.txt" ),header = FALSE)
+&nbsp; dataSubjectTest &nbsp;<- read.table(file.path(filepath\_full, "test" , "subject\_test.txt"),header = FALSE)
 
-# &nbsp; dataFeaturesTrain <- read.table(file.path(filepath\_full, "train", "X\_train.txt"),header = FALSE)
+# Read Features &nbsp;files
 
-# **We are implementing the spec (1)**** Merges the training and the test sets to create one data set.**
+&nbsp; dataFeaturesTest &nbsp;<- read.table(file.path(filepath\_full, "test" , "X\_test.txt" ),header = FALSE)
 
-# **Merge the rows from Train and Test files for Subject , activity and features to produce unified data frame**
+&nbsp; dataFeaturesTrain <- read.table(file.path(filepath\_full, "train", "X\_train.txt"),header = FALSE)
 
-# &nbsp; dataSubject <- rbind(dataSubjectTrain, dataSubjectTest)
+&nbsp;
 
-# &nbsp; dataActivity <- rbind(dataActivityTrain, dataActivityTest)
+# We are implementing the spec (1) Merges the training and the test sets to create one data set.
 
-# &nbsp; dataFeatures <- rbind(dataFeaturesTrain, dataFeaturesTest)
+&nbsp;
 
-# **Name the fields &nbsp;of subject and activity**
+Merge the rows from Train and Test files for Subject , activity and features to produce unified data frame
 
-# &nbsp; names(dataSubject)<-c("subject")
+&nbsp; dataSubject <- rbind(dataSubjectTrain, dataSubjectTest)
 
-# &nbsp; names(dataActivity)<- c("activity")
+&nbsp; dataActivity <- rbind(dataActivityTrain, dataActivityTest)
 
-# &nbsp; **Read the features.txt file and extract the field containing the names .**
+&nbsp; dataFeatures <- rbind(dataFeaturesTrain, dataFeaturesTest)
 
-# &nbsp; dataFeaturesNames <- read.table (file.path(filepath\_full, "features.txt"), head=FALSE )
+&nbsp;
 
-# &nbsp; names(dataFeatures) <- dataFeaturesNames$V2
+Name the fields &nbsp;of subject and activity
 
-# Do a columnar merge of subject, activity and features to create a single data frame.
+&nbsp; names(dataSubject)<-c("subject")
 
-# &nbsp; dataCombine <- cbind(dataSubject, dataActivity)
+&nbsp; names(dataActivity)<- c("activity")
 
-# &nbsp; Data <- cbind(dataFeatures, dataCombine)
+&nbsp;
 
-**We are implementing (2) Extracts only the measurements on the mean and standard deviation for each measurement.**
+&nbsp;Read the features.txt file and extract the field containing the names .
 
-# **# we will use grep command to extrace out selected coumns . These columns represene variables that have mean and std in their names . we will subset (using SelectedColumns) the merged data and extract out required &nbsp;data .**
+&nbsp;
 
-# &nbsp; grep\_std\_string <- "mean\\(\\)|std\\(\\)"
+&nbsp; dataFeaturesNames <- read.table (file.path(filepath\_full, "features.txt"), head=FALSE )
 
-# &nbsp; Needed\_features <- dataFeaturesNames[,2][grep(grep\_std\_string, dataFeaturesNames[,2])]
+&nbsp; names(dataFeatures) <- dataFeaturesNames$V2
 
-# &nbsp; SelectedColumns <- c(as.character(Needed\_features), "subject" , "activity")
+&nbsp;
 
-# &nbsp; **Data<-subset(Data,select=SelectedColumns) &nbsp;**** ? ****This piece of code acieves subsetting**
+Do a columnar merge of subject, activity and features to create a single data frame.
 
-**(3) & (4) We are implementing Uses descriptive activity names to name the activities in the data set**
+&nbsp;
 
-# ##############################################################################
+&nbsp; dataCombine <- cbind(dataSubject, dataActivity)
 
-# **Name the column of Data frame with meaningful names . we will use gsub function to do a global substitute of source strings to column strings as part of names.**
+&nbsp; Data <- cbind(dataFeatures, dataCombine)
 
-# **gsub()**** &nbsp; ****function replaces all matches of a string, if the parameter is a string vector, returns a string vector of the same length and with the same attributes (after possible coercion to character). Elements of string vectors which are not substituted will be returned unchanged (including any declared encoding).**** &nbsp;**
+&nbsp;
 
-# **tBody will be converted to Time\_Body**
+We are implementing (2) Extracts only the measurements on the mean and standard deviation for each measurement.
 
-# **FBody will be converted to Frequency\_Body**
+&nbsp;
 
-# **tGravity will be converted to Time\_Gravity**
+# we will use grep command to extract out selected columns. These columns represent variables that have mean and std in their names . we will subset (using SelectedColumns) the merged data and extract out required &nbsp;data .
 
-# **Acc will be converted to Accelerometer**
+&nbsp;
 
-# **Gyo will be converted to Gyroscope**
+&nbsp; grep\_std\_string <- "mean\\(\\)|std\\(\\)"
 
-# **Mag will be converted to Magnitude**
+&nbsp; Needed\_features <- dataFeaturesNames[,2][grep(grep\_std\_string, dataFeaturesNames[,2])]
 
-# **BodyBOdy will be Concerted to Body**
+&nbsp; SelectedColumns <- c(as.character(Needed\_features), "subject" , "activity")
 
-# #############################################################################
+&nbsp; Data<-subset(Data,select=SelectedColumns) &nbsp;? This piece of code acieves subsetting
+
+&nbsp;
+
+(3) & (4) We are implementing Uses descriptive activity names to name the activities in the data set
+
+&nbsp;
+
+##############################################################################
+
+Name the column of Data frame with meaningful names . we will use gsub function to do a global substitute of source strings to column strings as part of names.
+
+gsub()&nbsp;function replaces all matches of a string, if the parameter is a string vector, returns a string vector of the same length and with the same attributes (after possible coercion to character). Elements of string vectors which are not substituted will be returned unchanged (including any declared encoding).&nbsp;
+
+tBody will be converted to Time\_Body
+
+FBody will be converted to Frequency\_Body
+
+tGravity will be converted to Time\_Gravity
+
+Acc will be converted to Accelerometer
+
+Gyo will be converted to Gyroscope
+
+Mag will be converted to Magnitude
+
+BodyBOdy will be Concerted to Body
+
+#############################################################################
 
 # &nbsp; names(Data)<-gsub("tBody", "Time\_Body", names(Data))
 
@@ -212,9 +256,9 @@ fileUrl<-"https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20H
 
 # &nbsp; names(Data)<-gsub("BodyBody", "Body", names(Data))
 
-**We are implementing (5) From the data set in step 4, creates a second, independent tidy data set with the average of each variable for each activity and each subject.**
+We are implementing (5) From the data set in step 4, creates a second, independent tidy data set with the average of each variable for each activity and each subject.
 
-# #Group the data, Create summary , write out the summary. We will be making use of group\_by , summarize\_each dply utility commands to achieve this.
+# #Group the data, Create summary, write out the summary. We will be making use of group\_by , summarize\_each dply utility commands to achieve this.
 
 # &nbsp; Data\_group <- group\_by(Data, subject, activity)
 
@@ -224,34 +268,34 @@ fileUrl<-"https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20H
 
 # }
 
-# The following test run proves that tidydata.txt was cteated and uploaded using above piece of R code.
+# The following test run proves that tidydata.txt was created and uploaded using above piece of R code.
 
-# **# The output file tidydata.txt has been uploaded to github**
+# The output file tidydata.txt has been uploaded to github
 
-# **# setwd("C:/Coursera/Getting\_cleaning\_data\_Course\_project")**
+# setwd("C:/Coursera/Getting\_cleaning\_data\_Course\_project")
 
-# **# > getwd()**
+# > getwd()
 
-# **# [1] "C:/Coursera/Getting\_cleaning\_data\_Course\_project"**
+# 1] "C:/Coursera/Getting\_cleaning\_data\_Course\_project"
 
-# **# working\_dir <- getwd()**
+# working\_dir <- getwd()
 
-# **# working\_dir**
+# working\_dir
 
-# **# [1] "C:/Coursera/Getting\_cleaning\_data\_Course\_project"**
+# [1] "C:/Coursera/Getting\_cleaning\_data\_Course\_project"
 
-# **#> source("C:/Coursera/Getting\_cleaning\_data\_Course\_project/run\_analysis.R")**
+# source("C:/Coursera/Getting\_cleaning\_data\_Course\_project/run\_analysis.R")
 
-# **#> run\_analysis(working\_dir)**
+# run\_analysis(working\_dir)
 
-# **# trying URL 'https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip'**
+# trying URL 'https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip'
 
-# **# Content type 'application/zip' length 62556944 bytes (59.7 Mb)**
+# Content type 'application/zip' length 62556944 bytes (59.7 Mb)
 
-# **# opened URL**
+# opened URL
 
-# **# downloaded 59.7 Mb**
+# downloaded 59.7 Mb
 
-# #
+# ##########################################################################################
 
 &nbsp;
