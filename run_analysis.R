@@ -81,12 +81,12 @@ run_analysis <- function (working_dir="", download_dir="/data")
 
 # The following gives run stack of program Invocation & Run. 
 # The output file tidydata.txt has been uploaded to github
-# setwd("C:/Coursera/Mahan_Coursera")
+# setwd("C:/Coursera/Getting_cleaning_data_Course_project")
 # > getwd()
-# [1] "C:/Coursera/Mahan_Coursera"
+# [1] "C:/Coursera/Getting_cleaning_data_Course_project"
 # working_dir <- getwd()
 # working_dir
-# [1] "C:/Coursera/Mahan_Coursera"
+# [1] "C:/Coursera/Getting_cleaning_data_Course_project"
 #> source("C:/Coursera/run_analysis.R")
 #> run_analysis(working_dir)
 # trying URL 'https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip'
