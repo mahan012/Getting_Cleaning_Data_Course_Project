@@ -87,7 +87,7 @@ run_analysis <- function (working_dir="", download_dir="/data")
 # working_dir <- getwd()
 # working_dir
 # [1] "C:/Coursera/Getting_cleaning_data_Course_project"
-#> source("C:/Coursera/run_analysis.R")
+#> source("C:/Coursera/Getting_cleaning_data_Course_project/run_analysis.R")
 #> run_analysis(working_dir)
 # trying URL 'https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip'
 # Content type 'application/zip' length 62556944 bytes (59.7 Mb)
